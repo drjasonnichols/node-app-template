@@ -1,82 +1,117 @@
-// Tab switching
-const loginTab = document.getElementById('login-tab');
-const createAccountTab = document.getElementById('create-account-tab');
-const logonForm = document.getElementById('logon-form');
-const createAccountForm = document.getElementById('create-account-form');
-const messageEl = document.getElementById('message');
+document.addEventListener('DOMContentLoaded', () => {
+  const door = document.getElementById('fridgeDoor');
+  const loginTab = document.getElementById('login-tab');
+  const createTab = document.getElementById('create-account-tab');
+  const loginForm = document.getElementById('logon-form');
+  const createForm = document.getElementById('create-account-form');
+  const message = document.getElementById('message');
 
-loginTab.addEventListener('click', () => {
-    logonForm.classList.add('active-form');
-    createAccountForm.classList.remove('active-form');
+
+  // Simple local "database" using localStorage
+  function getUsers() {
+    return JSON.parse(localStorage.getItem("users") || "[]");
+  }
+  function saveUsers(users) {
+    localStorage.setItem("users", JSON.stringify(users));
+  }
+  function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+
+  // Play fridge door animation on load
+  if (door) {
+    door.classList.add('is-opening');
+    door.addEventListener('animationend', () => {
+      door.style.display = 'none';
+    }, { once: true });
+  }
+
+
+  // Tab switching
+  loginTab.addEventListener('click', () => {
     loginTab.classList.add('active');
-    createAccountTab.classList.remove('active');
-});
+    createTab.classList.remove('active');
+    loginForm.classList.remove('hidden');
+    createForm.classList.add('hidden');
+    message.textContent = '';
+  });
 
-createAccountTab.addEventListener('click', () => {
-    createAccountForm.classList.add('active-form');
-    logonForm.classList.remove('active-form');
-    createAccountTab.classList.add('active');
+
+  createTab.addEventListener('click', () => {
+    createTab.classList.add('active');
     loginTab.classList.remove('active');
-});
+    createForm.classList.remove('hidden');
+    loginForm.classList.add('hidden');
+    message.textContent = '';
+  });
 
-// Logon form submission
-logonForm.addEventListener('submit', async (event) => {
-    event.preventDefault();
-    const email = document.getElementById('login-email').value;
-    const password = document.getElementById('login-password').value;
 
-    try {
-        const response = await fetch('/api/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password }),
-        });
+  // Account creation handler
+  createForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const email = document.getElementById('create-email').value.trim();
+    const password = document.getElementById('create-password').value.trim();
+    const confirmPassword = document.getElementById('confirm-password').value.trim();
 
-        const result = await response.json();
-        if (response.ok) {
-            localStorage.setItem('jwtToken', result.token);
-            window.location.href = '/dashboard';
-        } else {
-            messageEl.textContent = result.message;
-            messageEl.classList.add('error');
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        messageEl.textContent = 'An error occurred. Please try again later.';
-        messageEl.classList.add('error');
+
+    if (!isValidEmail(email)) {
+      message.textContent = 'Please enter a valid email.';
+      message.className = 'message text-red-500 text-center mt-4';
+      return;
     }
-});
-
-// Create account form submission
-createAccountForm.addEventListener('submit', async (event) => {
-    event.preventDefault();
-    const email = document.getElementById('create-email').value;
-    const password = document.getElementById('create-password').value;
-
-    try {
-        const response = await fetch('/api/create-account', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password }),
-        });
-
-        const result = await response.json();
-        if (response.ok) {
-            messageEl.textContent = 'Account created successfully! You can now log in.';
-            messageEl.classList.add('success');
-            document.getElementById('login-email').value = email;
-            document.getElementById('login-password').value = password;
-            logonForm.classList.add('active-form');
-            createAccountForm.classList.remove('active-form');
-            loginTab.classList.add('active');
-            createAccountTab.classList.remove('active');
-        } else {
-            messageEl.textContent = result.message;
-            messageEl.classList.add('error');
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        messageEl.textContent = 'An error occurred. Please try again later.';
-        messageEl.classList.add('error');
+    if (password.length < 6) {
+      message.textContent = 'Password must be at least 6 characters.';
+      message.className = 'message text-red-500 text-center mt-4';
+      return;
     }
+    if (password !== confirmPassword) {
+      message.textContent = 'Passwords do not match. Please try again.';
+      message.className = 'message text-red-500 text-center mt-4';
+      return;
+    }
+
+
+    let users = getUsers();
+    if (users.find(u => u.email === email)) {
+      message.textContent = 'Email already registered.';
+      message.className = 'message text-red-500 text-center mt-4';
+      return;
+    }
+
+
+    users.push({ email, password }); // ⚠️ plain password for demo only
+    saveUsers(users);
+
+
+    message.textContent = 'Account created! Please log in.';
+    message.className = 'message text-green-500 text-center mt-4';
+    loginTab.click();
+  });
+
+
+  // Login handler
+  loginForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const email = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value.trim();
+
+
+    let users = getUsers();
+    const user = users.find(u => u.email === email && u.password === password);
+
+
+    if (!user) {
+      message.textContent = 'Invalid email or password. Please try again or create an account.';
+      message.className = 'message text-red-500 text-center mt-4';
+      return;
+    }
+
+
+    message.textContent = 'Welcome back!';
+    message.className = 'message text-green-500 text-center mt-4';
+    setTimeout(() => {
+      window.location.href = 'dashboard.html';
+    }, 1000);
+  });
 });

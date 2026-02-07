@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fridge Friend - Inventory</title>
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fridge Friend - Inventory</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+
+<body class="bg-gray-100 min-h-screen">
+  <!-- Header & Navigation -->
+  <header class="bg-blue-600 text-white p-4">
+    <h1 class="text-2xl font-bold">Fridge Friend</h1>
+    <nav class="mt-2 space-x-2">
+      <a href="dashboard.html" class="hover:underline">Dashboard</a> |
+      <a href="inventory.html" class="underline font-semibold">Inventory</a> |
+      <a href="recipes.html" class="hover:underline">Recipes</a> |
+      <a href="health.html" class="hover:underline">Health</a> |
+      <a href="reports.html" class="hover:underline">Reports</a> |
+      <a href="scan.html" class="hover:underline">Scan</a> |
+      <button id="logoutButton" class="text-white hover:underline">Logout</button>
+    </nav>
+  </header>
+
+
+  <!-- ============================================= -->
+  <!-- MAIN CONTENT -->
+  <!-- ============================================= -->
+  <main class="container mx-auto p-6">
+    <!-- Title + Add Button -->
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-2xl font-semibold">Fridge Friend Inventory</h2>
+      <button id="addItemButton" class="bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700">
+        + Add Item
+      </button>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="mb-4">
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Search items..."
+        class="w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+      />
+    </div>
+
+    <!-- Inventory Grid (Cards) -->
+    <div id="inventoryGrid" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <!-- Items will be injected here by JS -->
+    </div>
+  </main>
+
+  <!-- ============================================= -->
+  <!-- ADD / EDIT MODAL -->
+  <!-- ============================================= -->
+  <div id="addModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex justify-center items-center z-50">
+    <div class="bg-white p-6 rounded-lg w-full max-w-md shadow-lg">
+      <h3 class="text-xl font-semibold mb-4" id="modalTitle">Add Item</h3>
+
+      <!-- Hidden field to track if editing -->
+      <input type="hidden" id="editIndex" value="-1" />
+
+      <form id="addItemForm" class="space-y-3">
+        <!-- Item Name -->
+        <div>
+          <label class="block text-sm font-medium mb-1">Name</label>
+          <input type="text" id="itemName" required class="w-full border p-2 rounded" />
+        </div>
+
+        <!-- Date Acquired -->
+        <div>
+          <label class="block text-sm font-medium mb-1">Date Acquired</label>
+          <input type="date" id="itemDateAcquired" class="w-full border p-2 rounded" />
+        </div>
+
+        <!-- Expiration Date -->
+        <div>
+          <label class="block text-sm font-medium mb-1">Expiration Date</label>
+          <input type="date" id="itemExpiration" required class="w-full border p-2 rounded" />
+        </div>
+
+        <!-- Quantity -->
+        <div>
+          <label class="block text-sm font-medium mb-1">Quantity</label>
+          <input type="number" id="itemQuantity" min="1" class="w-full border p-2 rounded" />
+        </div>
+
+        <!-- Serving Size -->
+        <div>
+          <label class="block text-sm font-medium mb-1">Serving Size</label>
+          <input type="text" id="itemServingSize" class="w-full border p-2 rounded" />
+        </div>
+
+        <!-- Servings per Container -->
+        <div>
+          <label class="block text-sm font-medium mb-1">Servings per Container</label>
+          <input type="number" id="itemServingsPerContainer" min="1" class="w-full border p-2 rounded" />
+        </div>
+
+        <!-- Toggle Nutrition -->
+        <div>
+          <button type="button" id="toggleNutrition" class="text-blue-600 underline text-sm">
+            Show Nutritional Info
+          </button>
+        </div>
+
+        <!-- Nutrition Fields (Hidden by default) -->
+        <div id="nutritionSection" class="hidden space-y-2">
+          <div>
+            <label class="block text-sm font-medium mb-1">Calories (kcal)</label>
+            <input type="number" id="itemCalories" class="w-full border p-2 rounded" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Protein (g)</label>
+            <input type="number" id="itemProtein" class="w-full border p-2 rounded" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Carbs (g)</label>
+            <input type="number" id="itemCarbs" class="w-full border p-2 rounded" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Fat (g)</label>
+            <input type="number" id="itemFat" class="w-full border p-2 rounded" />
+          </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" id="cancelAdd" class="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400">
+            Cancel
+          </button>
+          <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+            Save
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================================= -->
+  <!-- JAVASCRIPT -->
+  <!-- ============================================= -->
+  <script src="js/inventory.js"></script>
+</body>
+</html>
