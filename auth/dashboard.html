@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <h2>Dashboard</h2>
+
+  <div class="dashboard-actions">
+    <a href="profile.html">
+      <button>Go to Profile</button>
+    </a>
+    <button id="logout">Logout</button>
+  </div>
+
+  <!-- Listings will render here -->
+  <div id="listingsContainer"></div>
+
+  <!-- Auth protection -->
+  <script src="guard.js"></script>
+
+  <!-- Listings logic (THIS is the important one) -->
+  <script src="js/listings.js"></script>
+
+</body>
+</html>

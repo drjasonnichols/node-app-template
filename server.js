@@ -1,4 +1,8 @@
 require('dotenv').config();
+
+console.log("DB_HOST =", process.env.DB_HOST);
+console.log("DB_NAME =", process.env.DB_NAME);
+
 const express = require('express');
 const mysql = require('mysql2/promise');
 const jwt = require('jsonwebtoken');
@@ -14,16 +18,40 @@ app.use(express.json());
 app.use(express.static('public'));
 
 //////////////////////////////////////
-//ROUTES TO SERVE HTML FILES
+// ROUTES TO SERVE HTML FILES
 //////////////////////////////////////
+
 // Default route to serve logon.html
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/public/logon.html');
 });
-
-// Route to serve dashboard.html
+// Route to serve browse.html
+app.get('/browse', (req, res) => {
+    res.sendFile(__dirname + '/public/browse.html');
+});
+ //dashboard route
 app.get('/dashboard', (req, res) => {
     res.sendFile(__dirname + '/public/dashboard.html');
+});
+
+// Route to serve profile.html
+app.get('/profile', (req, res) => {
+    res.sendFile(__dirname + '/public/profile.html');
+});
+
+// Route to serve listing-new.html
+app.get('/listing-new', (req, res) => {
+    res.sendFile(__dirname + '/public/listing-new.html');
+});
+
+// Route to serve my-listings.html
+app.get('/my-listings', (req, res) => {
+    res.sendFile(__dirname + '/public/my-listings.html');
+});
+
+// Route to serve messages.html
+app.get('/messages', (req, res) => {
+    res.sendFile(__dirname + '/public/messages.html');
 });
 //////////////////////////////////////
 //END ROUTES TO SERVE HTML FILES
@@ -87,25 +115,36 @@ async function authenticateToken(req, res, next) {
 //////////////////////////////////////
 //ROUTES TO HANDLE API REQUESTS
 //////////////////////////////////////
-// Route: Create Account
+
+// Route: Create Account (Updated for Task 2)
 app.post('/api/create-account', async (req, res) => {
-    const { email, password } = req.body;
+    let { email, password } = req.body;
 
     if (!email || !password) {
         return res.status(400).json({ message: 'Email and password are required.' });
     }
 
+    // 1. Trim and lowercase email
+    email = email.trim().toLowerCase();
+
+    // 2. Reject if email does not end with .edu
+    if (!email.endsWith('.edu')) {
+        return res.status(403).json({ 
+            message: 'Only students with a valid .edu email address can sign up.' 
+        });
+    }
+
     try {
         const connection = await createConnection();
-        const hashedPassword = await bcrypt.hash(password, 10);  // Hash password
+        const hashedPassword = await bcrypt.hash(password, 10);
 
+        // 3. Insert user with is_verified = 1
         const [result] = await connection.execute(
-            'INSERT INTO user (email, password) VALUES (?, ?)',
-            [email, hashedPassword]
+            'INSERT INTO user (email, password, is_verified) VALUES (?, ?, ?)',
+            [email, hashedPassword, 1] // Verified by default for .edu
         );
 
-        await connection.end();  // Close connection
-
+        await connection.end();
         res.status(201).json({ message: 'Account created successfully!' });
     } catch (error) {
         if (error.code === 'ER_DUP_ENTRY') {
@@ -159,6 +198,58 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
+// Route: Get Profile 
+app.get('/api/me', authenticateToken, async (req, res) => {
+    try {
+        const connection = await createConnection();
+
+        // Query using exact column names from your database screenshot
+        const [rows] = await connection.execute(
+            'SELECT email, full_name, bio, campus, location, profile_photo_url, is_verified FROM user WHERE email = ?',
+            [req.user.email]
+        );
+
+        await connection.end();
+
+        if (rows.length === 0) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+
+        res.status(200).json(rows[0]);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error retrieving profile data.' });
+    }
+});
+
+// Task 4 — Backend: Update Profile
+app.put('/api/me', authenticateToken, async (req, res) => {
+    const { full_name, bio, campus, location, profile_photo_url } = req.body;
+
+    try {
+        const connection = await createConnection();
+
+        // Update the user table using the email from the JWT (req.user.email)
+        const [result] = await connection.execute(
+            `UPDATE user 
+             SET full_name = ?, bio = ?, campus = ?, location = ?, profile_photo_url = ? 
+             WHERE email = ?`,
+            [full_name, bio, campus, location, profile_photo_url, req.user.email]
+        );
+
+        await connection.end();
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+
+        res.status(200).json({ message: 'Profile Updated!' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error Encountered.' });
+    }
+});
+
 // Route: Get All Email Addresses
 app.get('/api/users', authenticateToken, async (req, res) => {
     try {
@@ -178,7 +269,6 @@ app.get('/api/users', authenticateToken, async (req, res) => {
 //////////////////////////////////////
 //END ROUTES TO HANDLE API REQUESTS
 //////////////////////////////////////
-
 
 // Start the server
 app.listen(port, () => {
