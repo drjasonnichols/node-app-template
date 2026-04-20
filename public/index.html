@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Campus Event Platform</title>
+  <link rel="icon" type="image/svg+xml" href="/images/asu-2.svg">
+  <link rel="stylesheet" href="css/index.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/DarkTheme.css">
+  <script src="js/theme-toggle.js"></script>
+</head>
+
+<body>
+  <nav class="navbar">
+    <div class="nav-left">
+      <div class="hamburger" id="hamburger">&#9776;</div>
+      <a href="/index.html" class="logo">RSVP Devils</a>
+    </div>
+    <div class="nav-right"></div>
+    <div class="profile-btn" id="profileBtn">
+      <i class="fas fa-user-circle"></i>
+    </div>
+  </nav>
+  
+  <!-- Profile Dropdown -->
+  <div class="profile-dropdown hidden" id="profileDropdown">
+    <a href="/userSettings.html"><i class="fas fa-user-gear"></i> Settings</a>
+    <a href="#" id="dropdownLogout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+  </div>
+  
+  <!-- Slide Menu -->
+  <div class="nav-links" id="navMenu">
+    <a href="/index.html"><i class="fas fa-house"></i> Home</a>
+    <a href="/events.html"><i class="fas fa-calendar"></i> Events</a>
+    <a href="/reminders.html"><i class="fas fa-bell"></i> Reminders</a>
+    <a href="/userEvents.html".><i class="fas fa-user"></i> My Events</a>
+    <a href="/dashboard.html" class="admin-only"><i class="fas fa-chart-line"></i> Dashboard</a>
+  </div>
+  
+  <!-- Dark overlay -->
+  <div id="overlay" class="overlay"></div>
+
+  <header>
+    <div class="header-top">
+      <div class="header-left"></div>
+      <div class="header-center">
+        <img src="/images/ASU Logos/asu-logo.png" alt="ASU Logo" class="asu-logo">
+        <h1>Campus Event Discovery & RSVP Platform</h1>
+        <p>Your centralized hub for discovering and managing campus events</p>
+      </div>
+      <div class="header-right"></div>
+    </div>
+  </header>
+
+  <!-- Highlight Events Display -->
+  <div class="highlight-container">
+    <div class="carousel-filters">
+      <span class="filter-label">Interests:</span>
+      <button class="cat-filter active" data-cat="All">All</button>
+    </div>
+    <div id="highlightCarousel" class="highlight-carousel"></div>
+    <div class="nav-container">
+      <button id="prevBtn" class="nav-btn">&#10094;</button>
+      <button id="nextBtn" class="nav-btn">&#10095;</button>
+    </div>
+  </div>
+
+  <main>
+    <!-- Browse Events & Create -->
+    <div class="feature">
+      <h2>Event Discovery & Creation</h2>
+      <p>
+       Discover or share upcoming campus events and activities that match
+        your academic, social, and professional interests.
+      </p>
+      <a href="/events.html">Browse Events</a>
+    </div>
+
+    <!-- Automated Reminders -->
+    <div class="feature">
+      <h2>Automated Event Reminders</h2>
+      <p>
+        Receive timely reminders before events you RSVP to, ensuring you
+        never miss important campus opportunities.
+      </p>
+      <a href="/reminders.html">View Reminders</a>
+    </div>
+
+    <div class="feature">
+      <h2>My Events</h2>
+      <p>
+         View your upcoming and past events in one convenient location.
+      </p>
+      <a href="/userEvents.html">View My Events</a>
+    </div>
+
+    <!-- Admin Analytics Dashboard -->
+    <div class="feature">
+      <h2>Admin Analytics Dashboard</h2>
+      <p>
+        Administrators can view engagement metrics, attendance trends,
+        and participation insights to support data-driven decisions and
+        improve campus involvement.
+      </p>
+      <a href="/dashboard.html">Open Analytics Dashboard</a>
+    </div>
+  </main>
+
+  <script src="/js/index.js"></script>
+  <script src="js/navbar.js"></script>
+  <script src="/js/background.js"></script>
+  <button id="theme-toggle-btn" title="Toggle dark mode"><i class="fas fa-moon"></i></button>
+</body>
+</html>

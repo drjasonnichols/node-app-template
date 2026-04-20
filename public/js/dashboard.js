@@ -24,8 +24,8 @@ document.addEventListener('DOMContentLoaded', () => {
     //////////////////////////////////////////
     // Log out and redirect to login
     logoutButton.addEventListener('click', () => {
-        localStorage.removeItem('token');
-        window.location.href = '/';
+        localStorage.removeItem('jwtToken');
+        window.location.href = '/logon.html';
     });
 
     // Refresh list when the button is clicked
@@ -41,9 +41,9 @@ document.addEventListener('DOMContentLoaded', () => {
     //CODE THAT NEEDS TO RUN IMMEDIATELY AFTER PAGE LOADS
     //////////////////////////////////////////////////////
     // Initial check for the token
-    const token = localStorage.getItem('jwtToken');
+    const token = localStorage.getItem('jwtoken');
     if (!token) {
-        window.location.href = '/';
+        window.location.href = '/logon.html';
     } else {
         DataModel.setToken(token);
         renderUserList();

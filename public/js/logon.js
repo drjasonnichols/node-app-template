@@ -4,6 +4,16 @@ const createAccountTab = document.getElementById('create-account-tab');
 const logonForm = document.getElementById('logon-form');
 const createAccountForm = document.getElementById('create-account-form');
 const messageEl = document.getElementById('message');
+const forgotPasswordLink = document.getElementById('forgot-password-link');
+const forgotPasswordForm = document.getElementById('forgot-password-form');
+
+// Show session expired message if redirected
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('reason') === 'expired') {
+    messageEl.textContent = 'Your session has expired. Please log in again.';
+    messageEl.style.color = '#FFC627';
+    messageEl.style.fontWeight = 'bold';
+}
 
 loginTab.addEventListener('click', () => {
     logonForm.classList.add('active-form');
@@ -35,7 +45,7 @@ logonForm.addEventListener('submit', async (event) => {
         const result = await response.json();
         if (response.ok) {
             localStorage.setItem('jwtToken', result.token);
-            window.location.href = '/dashboard';
+            window.location.href = '/index.html'; 
         } else {
             messageEl.textContent = result.message;
             messageEl.classList.add('error');
@@ -77,6 +87,44 @@ createAccountForm.addEventListener('submit', async (event) => {
     } catch (error) {
         console.error('Error:', error);
         messageEl.textContent = 'An error occurred. Please try again later.';
+        messageEl.classList.add('error');
+    }
+});
+
+//forgot password form 
+forgotPasswordLink.addEventListener('click', () => {
+    logonForm.classList.remove('active-form');
+    createAccountForm.classList.remove('active-form');
+    forgotPasswordForm.classList.add('active-form');
+
+    loginTab.classList.remove('active');
+    createAccountTab.classList.remove('active');
+});
+
+//forgot password submission 
+forgotPasswordForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const email = document.getElementById('forgot-email').value;
+
+    try {
+        const response = await fetch('/api/forgot-password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email }),
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            messageEl.textContent = 'Reset link sent to your email.';
+            messageEl.classList.add('success');
+        } else {
+            messageEl.textContent = result.message;
+            messageEl.classList.add('error');
+        }
+    } catch (error) {
+        console.error(error);
+        messageEl.textContent = 'Error sending reset email.';
         messageEl.classList.add('error');
     }
 });
